@@ -3,17 +3,18 @@ import router from "./Routes/index.js";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import morgan from "morgan";
+import cors from "cors"
+
 
 const app = express();
 dotenv.config();
-app.use(morgan('dev'))
+app.use(morgan('dev'));
+app.use(express.json());
+app.use(cors())
 
 app.use((req, res, next) => {
   console.log("hi from middleware use")
   next();
-})
-app.get("/", function (req, res) {
-  res.send("Hello there!")
 })
 
 app.use("/api/v1", router)
