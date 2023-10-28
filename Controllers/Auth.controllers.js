@@ -1,5 +1,5 @@
 export const Login = (req, res) => {
-  res.send("Login")
+  res.send("Login pg")
 }
 
 export const Register = (req, res) => {
