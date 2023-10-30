@@ -11,17 +11,18 @@ export const Login = async (req, res) => {
     const user = await UserModal.findOne({ email: email })
 
     if (!user) return res.status(401).json({ success: false, message: "Email is wrong or not registered" })
-    // console.log(user, "user")
+    console.log(user, "user")
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password)
-    // console.log(isPasswordCorrect, "passsss")
+    console.log(isPasswordCorrect, "passsss")
 
-    if (!isPasswordCorrect) return res.status(401).json({ success: false, message: "Your password is incorrect" })
+    if (!isPasswordCorrect) { return res.status(401).json({ success: false, message: "Your password is incorrect" }) }
 
     const token = await Jwt.sign({ id: user._id }, process.env.JWT_SECRET)
-    console.log.apply(token,"token")
 
-    return res.status(200).json({ success: true, message: "Login successfull", user: { name: user.name, id: user._id } })
+    // console.log(token, "token")
+
+    return res.status(200).json({ success: true, message: "Login successfull", user: { name: user.name, id: user._id }, token })
 
   } catch (error) {
     return res.status(500).json({ success: false, message: error })
@@ -49,11 +50,12 @@ export const Register = async (req, res) => {
 
 export const getCurrentUser = async (req, res) => {
   try {
-    const { id } = req.body;
-    if (!id) return res.status(401).json({ success: false, message: "ID is required" })
+    const { token } = req.body;
+    if (!token) return res.status(401).json({ success: false, message: "Token is required" })
 
+    const { id } = await Jwt.verify(token, process.env.JWT_SECRET)
+    
     const user = await UserModal.findById(id);
-
     if (!user) return res.status(401).json({ success: false, message: "User not found" })
 
     return res.status(200).json({ success: true, user: { name: user.name, id: user._id } })
