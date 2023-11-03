@@ -7,9 +7,9 @@ export const checkUserId = async (req, res, next) => {
     if (user) {
       next();
     } else {
-      return res.status(404).json({ success: false, message: "User not found" })
+      return res.status(404).json({ success: false, message: "ID is not found" })
     }
   } catch (error) {
-    return res.status(500).json({ success: false, message: error })
+    return res.status(500).json({ success: false, message: error.message })
   }
 }
