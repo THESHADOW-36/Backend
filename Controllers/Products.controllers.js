@@ -1,11 +1,12 @@
 import ProductModal from "../Modals/Product.modal.js"
 
 
+
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await ProductModal.find({}).limit(10)
+    const products = await ProductModal.find({}).limit(10).select("-createdAt -updatedAt -__v")
     if (products.length) {
-      return res.status(200).json({ success: true, message: "Products found", product: { products } })
+      return res.status(200).json({ success: true, message: "Products found", product: products })
     }
     return res.status(404).json({ success: false, message: "Product are unavailable" })
   } catch (error) {
@@ -13,18 +14,22 @@ export const getAllProducts = async (req, res) => {
   }
 }
 
+
+
 export const getSingleProduct = async (req, res) => {
   try {
     const { productId } = req.body
     if (!productId) return res.status(404).json({ success: false, message: "Product ID is required" })
-    const product = await ProductModal.findById(productId).select("name -_id price image")
+    const product = await ProductModal.findById(productId).select("-createdAt -updatedAt -__v")
     if (product) {
-      return res.status(200).json({ success: true, message: "Products found" })
+      return res.status(200).json({ success: true, message: "Products found", product })
     }
   } catch (error) {
     return res.status(500).json({ success: false, message: error })
   }
 }
+
+
 
 export const addProduct = async (req, res) => {
   try {
@@ -45,22 +50,52 @@ export const addProduct = async (req, res) => {
   }
 }
 
+
+
 export const filterProducts = async (req, res) => {
   try {
-    const { skip, page = 10, query, sorting } = req.body;
+    const { query } = req.body;
 
-    const updatedQuery = { category: query }
-    // updatedQuery.category = query
+    const updatedQuery = {}
+    updatedQuery.category = query
+    const products = await ProductModal.find(updatedQuery)
+
+    return res.status(200).json({ success: true, message: "Product found", products: products })
+
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ success: false, message: error })
+  }
+}
+
+
+
+export const sortingFilterProducts = async (req, res) => {
+  try {
+    const { sorting } = req.body;
 
     const name = sorting.replace(/^-/, "")
 
     const order = sorting[0] == "-" ? "-" : "";
 
-    const updatedSorting = { [name]: `${order}1` };
+    const updatedSorting = { [name]: `${order}1` }
 
-    const products = await ProductModal.find(updatedQuery).skip(skip * 10).limit(page).sort({ sorting: 1 })
+    const products = await ProductModal.find({}).sort(updatedSorting)
 
-    return res.status(201).json({ success: true, message: "Product found", products: products })
+    return res.status(200).json({ success: true, message: "Product found", products: products })
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error })
+  }
+}
+
+export const pageFilterProducts = async (req, res) => {
+  try {
+    const { skip, page = 10 } = req.body;
+
+    const products = await ProductModal.find({}).skip(skip * 10).limit(page)
+
+    return res.status(200).json({ success: true, message: "Product found", products: products })
 
   } catch (error) {
     return res.status(500).json({ success: false, message: error })

@@ -17,6 +17,10 @@ app.use((req, res, next) => {
   next();
 })
 
+app.get("/",(req,res)=>{
+  res.send("Welcom to Backend Server")
+})
+
 app.use("/api/v1", router)
 
 mongoose.connect(process.env.MONGOURL).then(() => console.log("Database connected"))
