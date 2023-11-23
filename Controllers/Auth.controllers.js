@@ -4,7 +4,7 @@ import Jwt from "jsonwebtoken";
 
 export const Login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body.userData;
 
     if (!email || !password) return res.status(401).json({ success: false, message: "all All fields are mandatory" })
 
