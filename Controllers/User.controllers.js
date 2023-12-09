@@ -40,7 +40,7 @@ export const cart = async (req, res) => {
 export const deleteToCart = async (req, res) => {
   try {
     const { proId, userId } = req.body;
-    if (!proId || userId) return res.status(404).json({ success: false, message: "User and products are mandatory" })
+    if (!proId || !userId) return res.status(404).json({ success: false, message: "User and products are mandatory" })
 
     const user = await UserModal.findById(userId)
     if (!user) return res.status(404).json({ success: false, message: "User not found" })
